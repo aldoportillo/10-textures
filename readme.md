@@ -114,4 +114,129 @@ loadingManager.onError = () => {
 // Pass it into texture loader
 
 const textureLoader = new THREE.TextureLoader(loadingManager)
+
 ```
+
+## UV Unwrapping
+
+When applying a texture to your geometry. You will notice that a texture will look different over different geometries.
+
+These UV coordinates are predefined. Remember UV Coordinates are coordinates in a 2D UV Map that is meant to represent a 3D Object.
+
+You can access these coordinates from the attributes:
+
+```javascript
+const coordinates = geometry.attributes.uv
+
+//Log Result: Float32BufferAttribute
+
+{
+    "itemSize": 2,
+    "type": "Float32Array",
+    "array": [
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 0
+    ],
+    "normalized": false
+}
+```
+
+## Transform the Texture
+
+```javascript
+
+const colorTexture = textureLoader.load(imageSource)
+
+//Always required for color compatibility
+
+colorTexture.colorSpace = THREE.SRGBColorSpace
+
+//Optional Settings
+
+colorTexture.repeat.x = 2
+colorTexture.repeat.y = 3
+
+colorTexture.wrapS = THREE.MirroredRepeatWrapping 
+colorTexture.wrapT = THREE.RepeatWrapping
+
+colorTexture.offset.x = 0.5
+colorTexture.offset.y = 0.5
+
+//Center PivotPoint and Rotate
+colorTexture.center.x = 0.5
+colorTexture.center.y = 0.5
+colorTexture.rotation = Math.PI / 4 //In Radians: 1/8th rotation since PI is half rotation
+
+```
+
+## Filtering and Mip Mapping
+
+Mip Mapping continuously creates smaller versions of our textures until we achieve the smallest 1x1.
+
+### Minification Filter
+
+We use the smaller version of our texture as we move away from the geometry. Although this is done automatically by the GPU. You can modify it.
+
+```javascript
+
+colorTexture.minFilter = THREE.NearestFilter //Super Sharp
+
+```
+
+### Magnification Filter
+
+We can use a larger version of our texture as we get closer if the image is low resolution.
+
+```javascript
+
+colorTexture.magFilter = THREE.LinearFilter //Default
+
+colorTexture.magFilter = THREE.NearestFilter //Super Sharp
+
+```
+
+### Extra:
+
+When exclusively using Nearest Filter on the MinFilter. You don't need to generate Mip Maps for the texture since we will always use the largest.
+
+```javascript
+
+color.texture.generateMipmaps = false
+colorTexture.minFilter = THREE.NearestFilter //Super Sharp
+
+
+```
+
+## Texture Format and Optimization
+
+.jpg - lossy compression but usually lighter
+.png - lossless compression but usually heavier
+
+## Sources
+
+[Polygon](https://www.poliigon.com/)
+[3D Textures](https://3dtextures.me/)
+[ArroWay](https://www.arroway-textures.ch/)
+[Substance 3D](https://www.adobe.com/products/substance3d-designer.html)
